@@ -57,14 +57,8 @@ App.Maps = function() {
         });  
     };
 
-    var displayLocationInfo = function(coordinate) {
-        $("#latitude").text(coordinate.latitude);
-        $("#longitude").text(coordinate.longitude);
-    };
-
     var init = function(callback) {
         getCurrentLocation(function(coordinates) {
-          displayLocationInfo(coordinates);
           map = initializeMaps(coordinates);
           callback();
         });
