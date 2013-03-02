@@ -6,7 +6,6 @@ App.Maps = function() {
     var getCurrentLocation = function(callback) { 
         var mapLocationDetails = function(position) {
             callback(position.coords);
-
         };
         navigator.geolocation.getCurrentPosition(mapLocationDetails);
     };
@@ -53,19 +52,23 @@ App.Maps = function() {
         $("#longitude").text(coordinate.longitude);
     };
 
-    var init = function() {
+    var init = function(locations) {
         getCurrentLocation(function(coordinates) {
           displayLocationInfo(coordinates);
           var map = initializeMaps(coordinates);
           addMarkerOnLatLng(map, coordinates);
-          addMarkerOnAddress(map, "Chennai");
-          addMarkerOnAddress(map, "Bangalore");
-          addMarkerOnAddress(map, "Koyambedu, Chennai");
-          addMarkerOnAddress(map, "Madhapur");
+          addMarkers(map, locations);
+        });
+    };
+    
+    var addMarkers = function(map, locations) {
+        _.each(locations, function(location) {
+            addMarkerOnAddress(map, location.name);
         });
     };
 
     return {
-        init: init
+        init: init,
+        addMarkers: addMarkers
     };
 };
