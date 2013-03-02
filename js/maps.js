@@ -30,21 +30,29 @@ App.Maps = function() {
         return marker;
     };
 
-    var addMarkerOnAddress = function(map, address) {
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode({'address': address}, function(results, status) {
-            if (status != google.maps.GeocoderStatus.OK) {
-                throw('Geocode was not successful for the following reason: ' + status);
-            }
-            var marker = new google.maps.Marker({
+    var addMarkerOnAddress = function(map, address, callback, type) {
+        $.getJSON("http://localhost/geocode/?city=" + address, function(data) {
+            var latLng = new google.maps.LatLng(data.latitude, data.longitude);            
+            var markerOptions = {
                 map: map,
-                position: results[0].geometry.location,
+                position: latLng,
                 animation: google.maps.Animation.DROP
-            });
+            };            
+            if(type) {
+                var image = {
+                    url: 'http://maps.google.com/mapfiles/ms/micons/green.png',
+                    size: new google.maps.Size(20, 32),
+                    origin: new google.maps.Point(0,0),        
+                    anchor: new google.maps.Point(0, 32)
+                };
+                markerOptions.icon = image;
+            }
+            var marker = new google.maps.Marker(markerOptions);
+            if(type) return;
             google.maps.event.addListener(marker, 'click', function() {
                 map.setZoom(8);
-                map.setCenter(marker.getPosition());
-                console.log("Clicked on " + results[0].formatted_address);
+                map.setCenter(marker.getPosition());                
+                callback();
             });
         });  
     };
@@ -58,24 +66,42 @@ App.Maps = function() {
         getCurrentLocation(function(coordinates) {
           displayLocationInfo(coordinates);
           map = initializeMaps(coordinates);
-          //addMarkerOnLatLng(map, coordinates);
           callback();
         });
     };
 
     var showCity = function(name){
-       addMarkerOnAddress(map, name); 
+       addMarkerOnAddress(map, name, function() {}, "aa"); 
     };
     
     var addMarkers = function(locations) {
         _.each(locations, function(location) {
-            addMarkerOnAddress(map, location);
+            addMarkerOnAddress(map, location, function() {});
+        }, "aa");
+    };
+
+
+    var addBoardingPoints = function(boardingPoints, callback, type){
+        _.each(_.keys(boardingPoints), function(location){
+            addMarkerOnAddress(map, location, function(){
+                callback(location, boardingPoints[location]);
+            }, type);
+        });
+    };
+
+     var addDropOffPoints = function(dropOffPoints, callback, type){
+        _.each(dropOffPoints, function(dropOffPoint){
+            addMarkerOnAddress(map, dropOffPoint.location, function(){
+                callback(dropOffPoint);
+            }, type);
         });
     };
 
     return {
         init: init,
         addMarkers: addMarkers,
-        showCity: showCity
+        showCity: showCity,
+        addBoardingPoints:addBoardingPoints,
+        addDropOffPoints:addDropOffPoints,
     };
 };

@@ -2,32 +2,39 @@ var App = App || {};
 
 App.init = function() {
   "use strict";
-    var maps = new App.Maps();
-    var redbus = new redBus();
-    var cities;
-    redbus.getSources(function(cityData) {
-          
-        cities = cityData.cities; 
-        maps.init(function(){
-
-            $(".details").show();    
-            $("#GO").click(showCities)
-        });
-    });
-  function showCities(){
-    
+  var maps = new App.Maps();
+  var redbus = new redBus();
+  var cities;
+  maps.init(function(){        
+      $(".details").show();    
+      $("#GO").click(showCities)
+  });
+  function showCities(){    
      var fromCity = $("#from").val(); 
      var toCity = $("#to").val();
      maps.showCity(fromCity); 
      maps.showCity(toCity); 
 
-     redBus().getJourneyPoints(getCityId(fromCity), getCityId(toCity), "2013-03-05",
+     redBus().getJourneyPoints(3, 6, "2013-03-05",
        function(journeyPoints){
-           var p = [_.keys(journeyPoints.boardingPoints)[0], _.keys(journeyPoints.dropOffPoints)[0]];
-           maps.addMarkers(p);
+           var p = [_.keys(journeyPoints.boardingPoints)[0], _.keys(journeyPoints.dropOffPoints)[0]];           
+           maps.addBoardingPoints(journeyPoints.boardingPoints, onChoosingBoardingPoint);
         }
-    );
+      );
 
+     function onChoosingBoardingPoint(boardingPoint, journeys) {
+        console.log(boardingPoint);
+        console.log(journeys);
+        _.each(journeys, function(journey){
+          maps.addDropOffPoints(journey.droppingTimes, onChoosingDropOffPoint);
+        });
+
+        function onChoosingDropOffPoint(dropOffPoint){
+          //var journeys = getJourneys(boardingPoint, dropOffPoint);
+          console.log(boardingPoint);
+          console.log(dropOffPoint);
+        }
+     }
   }
 
   function getCityId(name){
