@@ -37,7 +37,8 @@ App.Maps = function() {
             }
             var marker = new google.maps.Marker({
                 map: map,
-                position: results[0].geometry.location
+                position: results[0].geometry.location,
+                animation: google.maps.Animation.DROP
             });
             google.maps.event.addListener(marker, 'click', function() {
                 map.setZoom(8);
