@@ -36,9 +36,8 @@ var App = (function() {
                 map: map,
                 position: results[0].geometry.location
             });
-            console.log(results[0].geometry.location);
           } else {
-            alert('Geocode was not successful for the following reason: ' + status);
+            throw('Geocode was not successful for the following reason: ' + status);
           }
         });  
     };
@@ -55,6 +54,8 @@ var App = (function() {
           addMarkerOnLatLng(map, coordinates);
           addMarkerOnAddress(map, "Chennai");
           addMarkerOnAddress(map, "Bangalore");
+          addMarkerOnAddress(map, "Koyambedu, Chennai");
+          addMarkerOnAddress(map, "Madhapur");
         });
     };
 
