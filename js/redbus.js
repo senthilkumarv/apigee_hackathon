@@ -25,8 +25,50 @@ var redBus = function(){
         });
     }
 
+
+    function getBoardingPoints(data){
+    
+        var boardingJourneys = {};
+        _.each(data.availableTrips, function(journey){
+           _.each(journey.boardingTimes, function(boardingTime){
+                var location = boardingTime.location;
+                boardingJourneys[location] = boardingJourneys[location] || [];
+                boardingJourneys[location].push(journey);
+           }); 
+        });
+
+        return boardingJourneys;
+    }
+
+    function getDropOffPoints(data){
+    
+        var dropOffJourneys = {};
+        _.each(data.availableTrips, function(journey){
+           _.each(journey.droppingTimes, function(droppingTime){
+                var location = droppingTime.location;
+                dropOffJourneys[location] = dropOffJourneys[location] || [];
+                dropOffJourneys[location].push(journey);
+           }); 
+        });
+
+        return dropOffJourneys;
+    }
+
+    function getJourenyPoints(source, destination, doj, callback){
+        var params = "source="+ source + "&destination=" + destination + "&doj=" + doj;
+        $.ajax(authUrl("http://api.seatseller.travel/availabletrips",params), {
+            success:function(data){
+                callback( {
+                    boardingPoints:getBoardingPoints(data),
+                    dropOffPoints:getDropOffPoints(data)
+                });
+            }
+        });
+    }
+
     return {
+        authUrl:authUrl,
         getSources:getSources,
-        authUrl:authUrl
+        getJourenyPoints:getJourenyPoints
     };
 }
