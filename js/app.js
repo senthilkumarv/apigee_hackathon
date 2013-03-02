@@ -18,7 +18,7 @@ App.init = function() {
      redBus().getJourneyPoints(3, 6, "2013-03-05",
        function(journeyPoints){
            var p = [_.keys(journeyPoints.boardingPoints)[0], _.keys(journeyPoints.dropOffPoints)[0]];           
-           maps.addBoardingPoints(journeyPoints.boardingPoints, onChoosingBoardingPoint);
+           maps.addBoardingPoints(journeyPoints.boardingPoints, fromCity, onChoosingBoardingPoint);
         }
       );
 
@@ -26,7 +26,7 @@ App.init = function() {
         console.log(boardingPoint);
         console.log(journeys);
         _.each(journeys, function(journey){
-          maps.addDropOffPoints(journey.droppingTimes, onChoosingDropOffPoint);
+          maps.addDropOffPoints(journey.droppingTimes, toCity, onChoosingDropOffPoint);
         });
 
         function onChoosingDropOffPoint(dropOffPoint){

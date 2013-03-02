@@ -30,7 +30,7 @@ App.Maps = function() {
         return marker;
     };
 
-    var addMarkerOnAddress = function(map, address, callback, type) {
+    var addMarkerOnAddress = function(map, address, callback, image) {
         $.getJSON("http://localhost/geocode/?city=" + address, function(data) {
             var latLng = new google.maps.LatLng(data.latitude, data.longitude);            
             var markerOptions = {
@@ -38,21 +38,14 @@ App.Maps = function() {
                 position: latLng,
                 animation: google.maps.Animation.DROP
             };            
-            if(type) {
-                var image = {
-                    url: 'http://maps.google.com/mapfiles/ms/micons/green.png',
-                    size: new google.maps.Size(20, 32),
-                    origin: new google.maps.Point(0,0),        
-                    anchor: new google.maps.Point(0, 32)
-                };
+            if(image) {
                 markerOptions.icon = image;
             }
             var marker = new google.maps.Marker(markerOptions);
-            if(type) return;
             google.maps.event.addListener(marker, 'click', function() {
                 map.setZoom(8);
                 map.setCenter(marker.getPosition());                
-                callback();
+                if(callback)callback();
             });
         });  
     };
@@ -65,35 +58,33 @@ App.Maps = function() {
     };
 
     var showCity = function(name){
-       addMarkerOnAddress(map, name, function() {}, "aa"); 
-    };
-    
-    var addMarkers = function(locations) {
-        _.each(locations, function(location) {
-            addMarkerOnAddress(map, location, function() {});
-        }, "aa");
+        var image = {
+                    url: 'http://maps.google.com/mapfiles/ms/micons/green.png',
+                    size: new google.maps.Size(20, 32),
+                    origin: new google.maps.Point(0,0),        
+                    anchor: new google.maps.Point(0, 32)
+                };
+       addMarkerOnAddress(map, name, function() {}, image); 
     };
 
-
-    var addBoardingPoints = function(boardingPoints, callback, type){
+    var addBoardingPoints = function(boardingPoints, city, callback, image){
         _.each(_.keys(boardingPoints), function(location){
-            addMarkerOnAddress(map, location, function(){
+            addMarkerOnAddress(map, location + ", " + city, function(){
                 callback(location, boardingPoints[location]);
-            }, type);
+            }, image);
         });
     };
 
-     var addDropOffPoints = function(dropOffPoints, callback, type){
+     var addDropOffPoints = function(dropOffPoints, city, callback, image){
         _.each(dropOffPoints, function(dropOffPoint){
-            addMarkerOnAddress(map, dropOffPoint.location, function(){
+            addMarkerOnAddress(map, dropOffPoint.location + ", " + city, function(){
                 callback(dropOffPoint);
-            }, type);
+            }, image);
         });
     };
 
     return {
         init: init,
-        addMarkers: addMarkers,
         showCity: showCity,
         addBoardingPoints:addBoardingPoints,
         addDropOffPoints:addDropOffPoints,
