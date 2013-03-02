@@ -3,6 +3,8 @@ App.Maps = function() {
     "use strict";
     /*global $: true, navigator: true, google: true, console: true */
 
+    var map;
+
     var getCurrentLocation = function(callback) { 
         var mapLocationDetails = function(position) {
             callback(position.coords);
@@ -52,23 +54,28 @@ App.Maps = function() {
         $("#longitude").text(coordinate.longitude);
     };
 
-    var init = function(locations) {
+    var init = function(callback) {
         getCurrentLocation(function(coordinates) {
           displayLocationInfo(coordinates);
-          var map = initializeMaps(coordinates);
-          addMarkerOnLatLng(map, coordinates);
-          addMarkers(map, locations);
+          map = initializeMaps(coordinates);
+          //addMarkerOnLatLng(map, coordinates);
+          callback();
         });
     };
+
+    var showCity = function(name){
+       addMarkerOnAddress(map, name); 
+    };
     
-    var addMarkers = function(map, locations) {
+    var addMarkers = function(locations) {
         _.each(locations, function(location) {
-            addMarkerOnAddress(map, location.name);
+            addMarkerOnAddress(map, location);
         });
     };
 
     return {
         init: init,
-        addMarkers: addMarkers
+        addMarkers: addMarkers,
+        showCity: showCity
     };
 };

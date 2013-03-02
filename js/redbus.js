@@ -69,6 +69,6 @@ var redBus = function(){
     return {
         authUrl:authUrl,
         getSources:getSources,
-        getJourenyPoints:getJourenyPoints
+        getJourneyPoints:getJourenyPoints
     };
 }
